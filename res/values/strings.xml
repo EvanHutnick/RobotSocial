@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">RobotSocial</string>
+    <string name="app_name">RobotSocial v2</string>
     <string name="action_settings">Settings</string>
 
     <string name="main_activity_description">Choose a type of content to share:</string>
