@@ -1,10 +1,14 @@
 package com.eh.telerik.robotsocial;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -15,7 +19,13 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		setupDatabase();
 		setupEvents();
+	}
+	
+	private void setupDatabase() {
+		DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+		dbHelper.open();
 	}
 	
 	private void setupEvents() {
@@ -39,26 +49,46 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 		
+		Button debugButton = (Button)findViewById(R.id.main_debug_button);
+		debugButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				DatabaseHelper dbHelper = ((RoboApp)getApplication()).getDBHelper();
+				SQLiteDatabase db = dbHelper.open();
+				
+				ArrayList<ShareContainer> shares = new ArrayList<ShareContainer>();
+				
+				Cursor cursor = db.rawQuery("select * from " + ShareContainer.tableName, null);
+				
+				cursor.moveToFirst();
+				
+				while (!cursor.isAfterLast()) {
+					ShareContainer share = shareToContainer(cursor);
+					shares.add(share);
+					cursor.moveToNext();
+				}
+				
+				for (ShareContainer share : shares) {
+					Log.d("SHARE_INFO", "ID: " + share.describe());
+				}
+			}
+		});
 	}
+	
+	private ShareContainer shareToContainer(Cursor cursor) {
+		ShareContainer share = new ShareContainer(this);
+		
+		int id = cursor.getInt(cursor.getColumnIndex("_id"));
+		String text = cursor.getString(cursor.getColumnIndex("sharetext"));
+		String uriString = cursor.getString(cursor.getColumnIndex("shareuri")); 
+		Uri uri = Uri.parse(uriString);
+		long time = cursor.getLong(cursor.getColumnIndex("sharetime"));
+		
+		share.populate(id, text, uri, time);
+		
+		return share;
+	}
+	
 
-// These methods are unused since we aren't using the options menu
-//
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-//		return true;
-//	}
-//
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		// Handle action bar item clicks here. The action bar will
-//		// automatically handle clicks on the Home/Up button, so long
-//		// as you specify a parent activity in AndroidManifest.xml.
-//		int id = item.getItemId();
-//		if (id == R.id.action_settings) {
-//			return true;
-//		}
-//		return super.onOptionsItemSelected(item);
-//	}
 }

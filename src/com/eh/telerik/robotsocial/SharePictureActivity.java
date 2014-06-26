@@ -1,6 +1,7 @@
 package com.eh.telerik.robotsocial;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,6 +19,7 @@ public class SharePictureActivity extends ActionBarActivity {
 	private Button cameraButton;
 	private Button sharePicture;
 	private ImageView thumbnail;
+	private Activity thisActivity;
 	
 	public Bitmap picture;
 	public Uri pictureUri; 
@@ -28,6 +30,8 @@ public class SharePictureActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share_picture);
+		
+		this.thisActivity = this;
 		
 		cameraButton = (Button)findViewById(R.id.share_picture_camera_button);
 		sharePicture = (Button)findViewById(R.id.share_picture_share_button);
@@ -60,10 +64,14 @@ public class SharePictureActivity extends ActionBarActivity {
 				if (picture == null) {
 					makeToast("Take a valid picture first!");
 				} else {
-					Intent intent = new Intent(Intent.ACTION_SEND);
-					intent.setType("image/jpeg");
-					intent.putExtra(Intent.EXTRA_STREAM, pictureUri);
-					startActivity(Intent.createChooser(intent, "Share picture with..."));
+//					Intent intent = new Intent(Intent.ACTION_SEND);
+//					intent.setType("image/jpeg");
+//					intent.putExtra(Intent.EXTRA_STREAM, pictureUri);
+//					startActivity(Intent.createChooser(intent, "Share picture with..."));
+					
+					ShareContainer share = new ShareContainer(thisActivity);
+					share.setPictureUri(pictureUri);
+					share.sendWithIntent();
 				}
 			}
 		});

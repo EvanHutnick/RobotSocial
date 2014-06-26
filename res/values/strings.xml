@@ -17,4 +17,6 @@
     <string name="share_picture_camera_button_text">Camera!</string>
     <string name="share_picture_thumbnail_content_description">Captured image to share</string>
     
+    <string name="debug_string">Debug</string>
+    
 </resources>

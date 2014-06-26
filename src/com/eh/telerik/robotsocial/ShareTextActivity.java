@@ -1,6 +1,7 @@
 package com.eh.telerik.robotsocial;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,11 +14,14 @@ public class ShareTextActivity extends ActionBarActivity {
 
 	private EditText textEntry;
 	private Button shareButton;
+	private Activity thisActivity;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share_text);
+	
+		this.thisActivity = this;
 		
 		textEntry = (EditText)findViewById(R.id.share_text_entry);
 		shareButton = (Button)findViewById(R.id.share_text_button);
@@ -33,15 +37,19 @@ public class ShareTextActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				String userEntry = textEntry.getText().toString();
 				
-				Intent textShareIntent = new Intent(Intent.ACTION_SEND);
-				textShareIntent.putExtra(Intent.EXTRA_TEXT, userEntry);
-				textShareIntent.setType("text/plain");
+//				Intent textShareIntent = new Intent(Intent.ACTION_SEND);
+//				textShareIntent.putExtra(Intent.EXTRA_TEXT, userEntry);
+//				textShareIntent.setType("text/plain");
+//				
+//				//startActivity(textShareIntent);  
+//				// ^^ this auto-picks the defined default program for a content type, but since we want users to 
+//				//    have options, we instead use the OS to create a chooser for users to pick from
+//				
+//				startActivity(Intent.createChooser(textShareIntent, "Share text with..."));
 				
-				//startActivity(textShareIntent);  
-				// ^^ this auto-picks the defined default program for a content type, but since we want users to 
-				//    have options, we instead use the OS to create a chooser for users to pick from
-				
-				startActivity(Intent.createChooser(textShareIntent, "Share text with..."));
+				ShareContainer share = new ShareContainer(thisActivity);
+				share.setText(userEntry);
+				share.sendWithIntent();
 			}
 		});
 	}
